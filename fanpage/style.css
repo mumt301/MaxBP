@@ -98,3 +98,8 @@ footer .footer-menu a:hover {
 #block-infos {
     vertical-align: top;
 }
+
+#block-infos ul li img {
+    width: 100px;
+    height: auto;
+}

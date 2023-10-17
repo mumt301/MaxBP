@@ -99,7 +99,7 @@ footer .footer-menu a:hover {
     vertical-align: top;
 }
 
-#block-infos ul li img {
+img.album {
     width: 100px;
     height: auto;
 }

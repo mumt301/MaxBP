@@ -103,3 +103,10 @@ img.album {
     width: 100px;
     height: auto;
 }
+
+#bloc-infos li a {
+    cursor: pointer;
+}
+#bloc-infos li .info-album {
+    display: none;
+}

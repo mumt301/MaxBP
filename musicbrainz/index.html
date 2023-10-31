@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+    <title>Artist Discography Search</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <meta charset="UTF-8">
+</head>
+
+<body>
+
+    <!--
+    Provide meaningful User-Agent strings 
+    Application name/<version> ( contact-url ) OR Application name/<version> ( contact-email )
+    Examples:
+    MyAwesomeTagger/1.2.0 ( http://myawesometagger.example.com )
+    MyAwesomeTagger/1.2.0 ( me@example.com )
+
+    https://musicbrainz.org/oauth2/authorize?response_type=code&client_id=COu0cQzLFLQCnKZ1UFf-AXe5d5-7Yls-&redirect_uri=https%3A%2F%2Fjuliesamuse.ca%2musicbrainz&scope=tag%20rating&state=access
+    -->
+
+    <section id="content">
+        <h1>MUMT301 - Assignment #3 - Maxime Béchard-Pelletier</h1>
+        <h3>Artist's discography search tool</h3>
+
+        <div id="connection-wrapper">
+            <h3>STEP 1 - connect to MusicBrainz API</h3>
+            <button id="connect-button">Connect to API</button>
+        </div>
+
+        <div id="search-form-wrapper">
+            <h3>STEP 2 - find any artist's discography</h3>
+            <input type="text" name="artist-name" placeholder="type in artist..." />
+            <button id="search-button">Retrieve the artist's data</button>
+        </div>
+
+        <div id="search-results"></div>
+
+    </section>
+
+
+    <script>
+
+    let connectButton = document.querySelector('#connect-button');
+    let searchButton = document.querySelector('#search-button');
+
+    //  We check for authorization code from the URL
+    var authCode = false;
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    if( urlParams.has('code') ) var authCode = urlParams.get('code');
+
+    if( authCode ) {
+        document.querySelector("#connection-wrapper").style.display = "none";
+        document.querySelector("#search-form-wrapper").style.display = "block";
+    } else {
+        document.querySelector("#connection-wrapper").style.display = "block";
+        document.querySelector("#search-form-wrapper").style.display = "none";
+    }
+
+    connectButton.addEventListener('click', event => {
+        const clientId = 'OvRvWUd6hIPejQ1AXVi8lX9HF-Ewuh4n';
+        const redirectUri = 'https://mumt301.github.io/MaxBP/musicbrainz/';
+        const authorizationUrl = 'https://musicbrainz.org/oauth2/authorize';
+
+        // STEP 1
+        // Generate the authorization URL
+        const authUrl = `${authorizationUrl}?client_id=${clientId}&response_type=code&redirect_uri=${redirectUri}&scope=tag`;
+        // Redirect the user to the MusicBrainz authorization page
+        window.location.href = authUrl;
+    });
+
+    searchButton.addEventListener('click', event => {
+        const artistName = document.querySelector('input[name=artist-name]').value;
+
+        const clientId = 'OvRvWUd6hIPejQ1AXVi8lX9HF-Ewuh4n';
+        const clientSecret = 'mwLmOsxlqWy0-Zmkbsj-fCRAz5uCsRie';
+        const redirectUri = 'https://mumt301.github.io/MaxBP/musicbrainz/';
+        const authorizationUrl = 'https://musicbrainz.org/oauth2/authorize';
+
+        const tokenUrl = 'https://musicbrainz.org/oauth2/token';
+
+        const requestBody = new URLSearchParams();
+        requestBody.append('grant_type', 'authorization_code');
+        requestBody.append('code', authCode); // Replace with the actual authorization code
+        requestBody.append('client_id', clientId); // Replace with your client ID
+        requestBody.append('client_secret', clientSecret); // Replace with your client secret
+        requestBody.append('redirect_uri', redirectUri); // Replace with your redirect URI
+
+        fetch(tokenUrl, {
+            method: 'POST',
+            body: requestBody,
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            const accessToken = data.access_token;
+            console.log("////  ACCESS TOKEN : "+accessToken);
+            const refreshToken = data.refresh_token; // Optional, if MusicBrainz provides refresh tokens
+            const apiEndpoint = 'https://musicbrainz.org/ws/2'; // MusicBrainz API endpoint
+
+
+            //  GET ARTIST ID
+            console.log(">>>>   Artist name : "+artistName);
+
+            fetch(`${apiEndpoint}/artist?query=${artistName}&fmt=json`, {
+            method: 'GET',
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.artists && data.artists.length > 0) {
+                const artist = data.artists[0]; // Assuming you want the first result
+                const artistId = artist.id;
+                console.log(`Artist ID: ${artistId}`);
+                } else {
+                console.log('Artist not found');
+                }
+
+                fetch(`${apiEndpoint}/artist?query=${artistName}&fmt=json`, {
+                method: 'GET',
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.artists && data.artists.length > 0) {
+                        const artist = data.artists[0]; // Assuming you want the first result
+                        const artistId = artist.id;
+                        console.log(`Artist ID: ${artistId}`);
+
+                        // Get release groups for the artist
+                        fetch(`${apiEndpoint}/artist/${artistId}?inc=release-groups&fmt=json`, {
+                        method: 'GET',
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data['release-groups'] && data['release-groups'].length > 0) {
+                            const releaseGroups = data['release-groups'];
+                            
+                            // Now, you can loop through release groups and get details for each release
+                            for (const releaseGroup of releaseGroups) {
+                                const releaseGroupId = releaseGroup.id;
+                                const releaseGroupName = releaseGroup.title;
+                                
+                                // Get individual releases for this release group
+                                fetch(`${apiEndpoint}/release-group/${releaseGroupId}?inc=releases&fmt=json`, {
+                                method: 'GET',
+                                })
+                                .then(response => response.json())
+                                .then(releaseData => {
+                                    if (releaseData.releases && releaseData.releases.length > 0) {
+                                        const node = document.createElement("h4");
+                                        const textnode = document.createTextNode(`Album: ${releaseGroupName}`);
+                                        node.appendChild(textnode);
+                                        document.getElementById("search-results").append(node);
+                                        /*
+                                        console.log('Releases:');
+                                        for (const release of releaseData.releases) {
+                                            const node2 = document.createElement("p");
+                                            const releaseNode = document.createTextNode(`Release: ${release.title}`);
+                                            node2.appendChild(releaseNode);
+                                            document.getElementById("search-results").append(node2);
+                                        }
+                                        */
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error fetching release data:', error);
+                                });
+                            }
+                            } else {
+                            console.log('No release groups found for this artist.');
+                            }
+                        })
+
+
+                    } else {
+                        console.log('Artist not found');
+                    }
+
+                })
+
+            })
+            .catch(error => {
+                console.error('Error searching for the artist:', error);
+            });
+
+        })
+        .catch(error => {
+            console.error('Error obtaining access token:', error);
+        });        
+
+        
+    });
+
+
+    function searchAPI() {
+        console.log("///////  Entré dans fonction...");
+
+        // let mbid = "9c9f1380-2516-4fc9-a3e6-f9f61941d090";
+        let response = fetch(`https://musicbrainz.org/ws/2/recording?query=%22we%20will%20rock%20you%22%20AND%20arid:0383dadf-2a4e-4d10-a46a-e9e041da8eb3&fmt=json`);
+        console.log('REPONSE : '+ response);
+
+        let clientID = "COu0cQzLFLQCnKZ1UFf-AXe5d5-7Yls-";
+        // let response = await fetch(`https://musicbrainz.org/oauth2/authorize?response_type=code&client_id=${clientID}&redirect_uri=https%3A%2F%2Fjuliesamuse.ca%2musicbrainz&scope=tag%20rating&state=access`);
+
+        fetch('https://musicbrainz.org/oauth2/authorize', {
+            method: 'POST',
+            body: 'response_type=code&client_id=' + clientID + '&redirect_uri=https%3A%2F%2Fjuliesamuse.ca%2musicbrainz&scope=tag',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            }
+        }).then(function (resp) {
+            console.log('REPONSE : '+ resp);
+            // Return the response as JSON
+            // return resp.json();
+        }).then(function (data) {
+            // Log the API data
+            console.log('token', data);
+        }).catch(function (err) {
+            // Log any errors
+            console.log('something went wrong', err);
+        });
+
+        // let jsonResponse = await response.json();
+        // console.log("////  RECORDINGS : "+jsonResponse );
+
+    }
+
+    /*
+    artistQuery = (await fetch("https://musicbrainz.org/ws/2/artist/?query=artist:queen%20AND%20country:GB%20AND%20NOT%20type:person&fmt=json")).json();
+    artists = artistQuery.artists;
+    */
+    </script>
+
+    
+</body>
+
+</html>

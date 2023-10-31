@@ -1,0 +1,53 @@
+html {
+    font-size: 62.5%;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size : 1.6rem;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+a {
+    color: #1c6bff;
+    text-decoration: none;
+}
+a:hover {
+    text-decoration: underline;
+}
+
+h1 {
+    font-size: 4.5rem;
+    color: #af3883;
+}
+h2 {
+    font-size: 3.5rem;
+    color: #af3883;
+}
+h3 {
+    font-size: 3.0rem;
+    color: #af3883;
+}
+
+
+#content {
+    margin: 0;
+    padding: 100px 20px;
+}
+
+
+#connection-wrapper {
+    display: none;
+    background-color: #cee9b8;
+    border: 2px solid #316d00;
+    padding: 50px;
+}
+#search-form-wrapper {
+    display: none;
+    background-color: #d7f0ff;
+    border: 2px solid #0181be;
+    padding: 50px;
+}

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+    <title>Audio compression assignment</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <meta charset="UTF-8">
+
+    <script>
+        var whichAudio = 'brass';
+        var thisAudio = 'brass';
+        const compressionTypes = ['mp3','ogg','ac3','m4a'];
+        const tableColumns = [
+            'Filename',
+            'Compression algorythm',
+            'Bit rate',
+            'Original size',
+            'Compressed size',
+            'Compression ratio',
+            'Link to original audio',
+            'Link to compressed audio',
+            'Link to residual audio'
+        ];
+    
+        const brass = {
+            name: 'Brass band',
+            fileoriginal: 'brassbandindoor-wav.wav',
+            filebasename: 'brassbandindoor-',
+            wavsize: 11.1,
+            mp3highsize: 2.5,
+            mp3highrate: '320 kbps',
+            mp3lowsize: 1.2,
+            mp3lowrate: '96 kbps',
+            ogghighsize: 3.4,
+            ogghighrate: 'Level 10',
+            ogglowsize: 0.5,
+            ogglowrate: 'Level 1',
+            ac3highsize: 2.5,
+            ac3highrate: '320 kbps',
+            ac3lowsize: 0.8,
+            ac3lowrate: '96 kbps',
+            m4ahighsize: 2.3,
+            m4ahighrate: '320 kbps',
+            m4alowsize: 1.6,
+            m4alowrate: '100 kbps',
+        };
+    
+        const piano = {
+            name: 'Piano sample',
+            filebasename: 'piano-loops-',
+            wavsize: 11.1,
+            mp3highsize: 2.5,
+            mp3highrate: '320 kbps',
+            mp3lowsize: 0.9,
+            mp3lowrate: '96 kbps',
+            ogghighsize: 3.0,
+            ogghighrate: 'Level 10',
+            ogglowsize: 0.5,
+            ogglowrate: 'Level 1',
+            ac3highsize: 2.5,
+            ac3highrate: '320 kbps',
+            ac3lowsize: 0.8,
+            ac3lowrate: '96 kbps',
+            m4ahighsize: 2.1,
+            m4ahighrate: '320 kbps',
+            m4alowsize: 1.6,
+            m4alowrate: '100 kbps',
+        };
+    
+        </script>
+    
+</head>
+
+<body>
+
+
+    <section id="content">
+        <h1>MUMT301 - Audio Compression Assignment</h1>
+
+        <div id="audio-player">
+            <p></p>
+            <audio controls>
+                <source src="test.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
+
+        <h3>Maxime Béchard-Pelletier</h3>
+        <p>Click on the button below to switch audio source</p>
+
+        <div id="audio-table-wrapper">
+            <button id="toggle-button">switch to <span class="audio-type"></span></button>
+            <h3>Audio compression table - <span class="audio-sample-title"></span> </h3>
+
+            <div id="audio-table"></div>
+        </div>
+
+
+    </section>
+
+
+
+    <script>
+
+    //  We show the default audio sample table
+    showAudioTitle(whichAudio);
+    createTable(whichAudio);
+    addEventToAudio();
+
+
+    let toggleButton = document.querySelector('#toggle-button');
+    toggleButton.addEventListener('click', event => {
+        //  We first switch the audio's title
+        if( whichAudio == 'brass' ) {
+            whichAudio = 'piano';
+        } else {
+            whichAudio = 'brass';
+        }
+
+        showAudioTitle(whichAudio);
+
+        let currentTable = document.querySelector('#audio-table');
+        while( currentTable.hasChildNodes() ) { currentTable.firstChild.remove(); }
+            
+        createTable(whichAudio);
+        addEventToAudio();
+    });
+
+
+
+
+
+
+    function showAudioTitle(currentAudio) {
+        let title = '';
+        let next = '';
+        let titleSpan = document.querySelector('#audio-table-wrapper .audio-sample-title');
+        let typeSpan = document.querySelector('#toggle-button .audio-type');
+
+        if( currentAudio == 'brass' ) {
+            title =  brass['name'];
+            next = 'piano';
+        }
+        if( currentAudio == 'piano' ) {
+            title =  piano['name'];
+            next = 'brass';
+        }
+
+        titleSpan.innerHTML = title;
+        typeSpan.innerHTML = next+' audio sample';
+    }
+
+
+    function createTable(audioSample) {
+        if( audioSample == 'brass' ) { thisAudio = brass; } else { thisAudio = piano; }
+        const tableWrapper = document.querySelector('#audio-table');
+
+        const table = document.createElement("table");
+
+        const tr = document.createElement("tr");
+        table.append(tr);
+        tableColumns.forEach((element) => {
+            const th = document.createElement("th");
+            const textnode = document.createTextNode(element);
+            th.appendChild(textnode);
+            tr.appendChild(th);
+        });
+
+        compressionTypes.forEach((element) => {
+            const originalFileName = thisAudio['filebasename']+'wav.wav'; 
+            const folder = '/audiofiles/';
+            var ratio = 0;
+            var audioType = '';
+            if( element == 'ogg' ) {
+                audioType = 'audio/ogg';
+            } else {
+                audioType = 'audio/mpeg';
+            }
+
+            //  LOW RES
+            var trlow = document.createElement("tr");
+            table.append(trlow);            
+            var td = document.createElement("td");
+            var textnode = document.createTextNode(thisAudio['filebasename']+element+'low.'+element);
+            td.appendChild(textnode);
+            trlow.appendChild(td);
+            td = document.createElement("td");
+            textnode = document.createTextNode(element);
+            td.appendChild(textnode);
+            trlow.appendChild(td);
+            td = document.createElement("td");
+            textnode = document.createTextNode(thisAudio[element+'lowrate']);
+            td.appendChild(textnode);
+            trlow.appendChild(td);
+            td = document.createElement("td");
+            textnode = document.createTextNode(thisAudio['wavsize']+' Mb');
+            td.appendChild(textnode);
+            trlow.appendChild(td);
+            td = document.createElement("td");
+            textnode = document.createTextNode(thisAudio[element+'lowsize']+' Mb');
+            td.appendChild(textnode);
+            trlow.appendChild(td);
+            ratio = Math.round( ( thisAudio[element+'lowsize'] / thisAudio['wavsize'] ) * 100) / 100;
+            td = document.createElement("td");
+            textnode = document.createTextNode(ratio);
+            td.appendChild(textnode);
+            trlow.appendChild(td);
+
+            td = document.createElement("td");
+            var a = document.createElement('a');  
+            var link = document.createTextNode("Original audio"); 
+            a.appendChild(link);  
+            a.href = folder+thisAudio['filebasename']+'wav.wav';
+            a.dataset.type = 'audio/wav';
+            td.appendChild(a);
+            trlow.appendChild(td);
+            td = document.createElement("td");
+            a = document.createElement('a');  
+            link = document.createTextNode("Compressed audio"); 
+            a.appendChild(link);  
+            a.href = folder+thisAudio['filebasename']+element+'low.'+element;
+            a.dataset.type = audioType;
+            td.appendChild(a);
+            trlow.appendChild(td);
+            td = document.createElement("td");
+            a = document.createElement('a');  
+            link = document.createTextNode("Residual audio"); 
+            a.appendChild(link);  
+            a.href = folder+thisAudio['filebasename']+element+'low-noise.wav';
+            a.dataset.type = 'audio/wav';
+            td.appendChild(a);
+            trlow.appendChild(td);
+            
+            //  HIGH RES
+            var trhigh = document.createElement("tr");
+            table.append(trhigh);            
+            td = document.createElement("td");
+            textnode = document.createTextNode(thisAudio['filebasename']+element+'high.'+element);
+            td.appendChild(textnode);
+            trhigh.appendChild(td);
+            td = document.createElement("td");
+            textnode = document.createTextNode(element);
+            td.appendChild(textnode);
+            trhigh.appendChild(td);
+            td = document.createElement("td");
+            textnode = document.createTextNode(thisAudio[element+'highrate']);
+            td.appendChild(textnode);
+            trhigh.appendChild(td);
+            td = document.createElement("td");
+            textnode = document.createTextNode(thisAudio['wavsize']+' Mb');
+            td.appendChild(textnode);
+            trhigh.appendChild(td);
+            td = document.createElement("td");
+            textnode = document.createTextNode(thisAudio[element+'highsize']+' Mb');
+            td.appendChild(textnode);
+            trhigh.appendChild(td);
+            ratio = Math.round( ( thisAudio[element+'highsize'] / thisAudio['wavsize'] ) * 100) / 100;
+            td = document.createElement("td");
+            textnode = document.createTextNode(ratio);
+            td.appendChild(textnode);
+            trhigh.appendChild(td);
+
+            td = document.createElement("td");
+            a = document.createElement('a');  
+            link = document.createTextNode("Original audio"); 
+            a.appendChild(link);  
+            a.href = folder+thisAudio['filebasename']+'wav.wav';
+            a.dataset.type = 'audio/wav';
+            td.appendChild(a);
+            trhigh.appendChild(td);
+            td = document.createElement("td");
+            a = document.createElement('a');  
+            link = document.createTextNode("Compressed audio"); 
+            a.appendChild(link);  
+            a.href = folder+thisAudio['filebasename']+element+'high.'+element;
+            a.dataset.type = audioType;
+            td.appendChild(a);
+            trhigh.appendChild(td);
+            td = document.createElement("td");
+            a = document.createElement('a');  
+            link = document.createTextNode("Residual audio"); 
+            a.appendChild(link);  
+            a.href = folder+thisAudio['filebasename']+element+'high-noise.wav';
+            a.dataset.type = 'audio/wav';
+            td.appendChild(a);
+            trhigh.appendChild(td);
+
+        });
+
+        tableWrapper.append(table);
+
+    }
+
+
+    function addEventToAudio() {
+        let audioFiles = document.querySelectorAll('#audio-table td a');
+        audioFiles.forEach ((item) => {
+            item.addEventListener('click', event => {
+                event.preventDefault();
+
+                var type = event.target.dataset.type;
+                var link = event.target.href;
+                const playerDiv = document.querySelector('#audio-player');
+                const playerDivTitle = document.querySelector('#audio-player p');
+                playerDivTitle.textContent = 'Now playing: '+link;
+
+                playerDiv.style.display = "block";
+                const player = document.querySelector('#audio-player audio');
+
+                player.src = link;
+                player.type = type;
+                player.play();
+            });
+        });
+
+    }
+
+    </script>
+
+    
+</body>
+
+</html>

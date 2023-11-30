@@ -1,0 +1,54 @@
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Theremin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <link rel="stylesheet" href="11.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzicato/0.6.4/Pizzicato.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Holtwood+One+SC&display=swap" rel="stylesheet">
+    <script src="11.js" type="text/JavaScript"></script>
+    <script src="11-auxiliary-functions.js" type="text/JavaScript"></script>
+</head>
+
+<body>
+    <h1>Online <span id="thereminLogo">Theremin</span> instrument</h1>
+    <h2>Additional features added by Maxime Béchard-Pelletier</h2>
+    <p>The theremin is an electronic musical instrument invented by <a
+            href="https://en.wikipedia.org/wiki/Leon_Theremin">Leon Theremin</a> in 1920s.</p>
+    <p>This demo uses <a href="https://alemangui.github.io/pizzicato/">pizzicato.js</a> to implement a "virtual"
+        Theremin on your browser.
+    </p>
+    <p>The <code>pizzicato.js</code> library (and other similar ones) use the <a
+            href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API">Web Audio API</a> to play sounds on
+        the browser.
+    </p>
+    <hr/>
+    <br/>
+
+
+    <div id="theremin-options">
+        <h4>Sound options</h4>
+        <input type="checkbox" name="autotune" id="autotune"> <label for="autotune">play chromatic notes</label><br/>
+        <input type="checkbox" name="reverb" id="reverb"> <label for="reverb">add reverb</label><br/>
+
+        <input type="radio" id="wave-type-sine" name="wave-type" value="sine" checked><label for="wave-type-sine">sine</label> &nbsp;&nbsp;&nbsp;
+        <input type="radio" id="wave-type-square" name="wave-type" value="square"><label for="wave-type-square">square</label> &nbsp;&nbsp;&nbsp;
+        <input type="radio" id="wave-type-triangle" name="wave-type" value="triangle"><label for="wave-type-triangle">triangle</label> &nbsp;&nbsp;&nbsp;
+        <input type="radio" id="wave-type-sawtooth" name="wave-type" value="sawtooth"><label for="wave-type-sawtooth">sawtooth</label>
+    </div>
+
+    <div id="theremin-infos">
+        <h4>Infos</h4>
+        <div id="frequency"><span class="title">Frequency:</span> <span class="info"></span></div>
+        <div id="note-name"><span class="title">Note:</span> <span class="info"></span></div>
+        <div id="volume"><span class="title">Volume:</span> <span class="info"></span></div>
+    </div>
+
+
+    <div id="thereminZone"></div>
+</body>
+
+</html>

@@ -1,0 +1,38 @@
+h4 {
+    margin-top: 0;
+}
+*{ touch-action: none; } 
+
+#thereminZone {
+    background: linear-gradient(90deg, rgb(0, 153, 184) 0%, rgb(181, 243, 255) 100%);
+    height: 200px;
+    width: 100%;
+    border-style: none;
+    margin: 20px 0;
+}
+
+#thereminLogo {
+    font-family: 'Holtwood One SC', serif;
+}
+
+
+#theremin-infos {
+    border: 1px solid rgb(0, 153, 184);
+    padding: 10px 20px;
+    color: rgb(0, 153, 184);
+    display: inline-block;
+    width: 35%;
+}
+
+#theremin-infos div .title {
+    display: inline-block;
+    width: 35%;
+}
+#theremin-infos div .info {
+    font-weight: 700;
+}
+
+#theremin-options {
+    display: inline-block;
+    width: 55%;
+}

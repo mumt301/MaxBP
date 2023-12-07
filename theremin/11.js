@@ -17,10 +17,11 @@ const userGestureEvents = [
 ];
 
 var userInteraction = false;
-const unlockAudio = () => {
+const unlockAudio = (e) => {
+    console.log("EVENT : "+e);
     userGestureEvents.forEach(eventName => {
-        document.removeEventListener(eventName, unlockAudio);
         userInteraction = true;
+        document.removeEventListener(eventName, unlockAudio);
     });
 };
 
@@ -28,6 +29,7 @@ const unlockAudio = () => {
 // Turn theremin on
 function thereminOn(oscillator) {
     oscillator.play();
+    // console.log("USER INTERACTION : "+userInteraction);
     if( userInteraction == false ) { window.alert("Please click on the page before playing so the browser can enable audio playback."); }
 }
 
@@ -35,12 +37,13 @@ function thereminOn(oscillator) {
 function thereminControl(e, oscillator, theremin) {
     let x = e.offsetX;
     let y = e.offsetY;
-    console.log(x, y);
+    // console.log(x, y);
 
     let minFrequency = 220.0;
     let maxFrequency = 880.0;
     let freqRange = maxFrequency - minFrequency;
     let thereminFreq = minFrequency + (x / theremin.clientWidth) * freqRange;
+    let thereminFreqRound = thereminFreq.toFixed(2);
     let thereminVolume = 1.0 - (y / theremin.clientHeight);
 
     if( autotune ) {
@@ -49,7 +52,7 @@ function thereminControl(e, oscillator, theremin) {
     }
     oscillator.frequency = thereminFreq;
     var frequency = document.querySelector('#frequency .info');
-    frequency.innerHTML = thereminFreq;
+    frequency.innerHTML = thereminFreqRound;
 
     oscillator.volume = thereminVolume;
     var volumeElement = document.querySelector('#volume .info');
